@@ -1,0 +1,15 @@
+Jquery常用API
+	
+1. slideToggle() 方法
+	效果：通过使用滑动效果，在显示和隐藏状态之间切换指定元素：
+	$("#btn").click(function(){
+  		$("#id").slideToggle();
+	});
+	如果需要默认为隐藏的话，开始处直接：
+		$("id").hide();
+2. 绑定回车键
+	$(document).keydown(function(event){ 
+		if(event.keyCode == 13){ 
+			$('#btn').click();
+		} 
+	}); 
