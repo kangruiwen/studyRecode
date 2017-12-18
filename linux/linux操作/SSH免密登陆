@@ -1,0 +1,9 @@
+SSH免密登陆
+
+配置主机之间的免密ssh登陆
+假如 A  要登陆  B
+在A上操作：
+%%首先生成密钥对
+ssh-keygen   (提示时，直接回车即可)
+%%再将A自己的公钥拷贝并追加到B的授权列表文件authorized_keys中
+ssh-copy-id   B

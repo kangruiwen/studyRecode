@@ -1,0 +1,121 @@
+Linux常用命令
+
+1. 新建、删除文件、文件夹
+	1.1 删除文件夹 rmdir directoryName，但是这样有个问题，文件夹不能为空
+	1.2 删除文件 rm fileName ，这个命令同样可以删除文件夹，并且可以递归的删除，命令为：
+	rm -rf direName
+	其中
+	-r 就是向下递归，不管有多少级目录，一并删除
+	-f 就是直接强行删除，不作任何提示的意思
+	1.3 创建文件夹
+	mkdir aaa     这是相对路径的写法 
+	mkdir -p aaa/bbb/ccc
+	mkdir  /data    这是绝对路径的写法
+	1.4 创建文件
+	touch  somefile.1   创建一个空文件
+	echo "i miss you,my baby" > somefile.2 
+	利用重定向的功能，将一条指令的输出结果写入到一个文件中，会覆盖原文件内容
+	echo "huangxiaoming ,gun dan" >> somefile.2     将一条指令的输出结果追加到一个文件中，不会覆盖原文件内容 
+2.	压缩解压缩的相关命令
+	*.gz ： 压缩文件
+	*.tar : 打包文件
+	所以有时候碰到filename.tar.gz这样子的为打包后压缩了一下的文件，tar与gz都是约定的后缀
+	2.1 
+	压缩命令 ：gzip filename
+	解压命令 ：gzip -d filename
+	2.2
+	打包命令 ： tar -cvf myTarBall.tar fileName
+	解包命令 ： tar -xvf myTarBall.tar
+	2.3 一次性完成打包压缩，解包解压缩
+	打包压缩： tar -zcvf myTar.tar.gz files
+	解包解压： tar -zxvf myTar.tar.gz
+	
+
+
+
+	tar -zxvf fileName.tar.gz 解压缩后的文件被放在当前目录
+
+
+3. linux 中查看进程，杀死进程
+	3.1 查进程
+		ps -ef|grep 'regex'
+		说明：ps命令查找与进程相关的PID，-ef分别表示，e现行终端机中的所有程序，包括其他用户的程序，f用ASCII码字符显示树状结构，表达程序间的相互关系
+		| ： 管道符 grep 过滤参数， 后边的‘’引号之间的内容为要过滤找到的内容
+	3.2 杀死进程
+		kill -9 PID
+4. linux 移动文件
+	mv  
+	命令格式：mv [-fiv] source destination
+    参数说明：
+    -f:force，强制直接移动而不询问
+    -i:若目标文件(destination)已经存在，就会询问是否覆盖
+    -u:若目标文件已经存在，且源文件比较新，才会更新
+	通配符是可以用的
+	
+5. vim 中的常用命令：
+	1.1 查找字符串 ： 
+		:/Section
+		斜杠然后输入要查找的字符串然后输入回车即可
+	1.2 显示行数
+		:set nu
+	1.3 直接跳转到第几行
+		:num   (num 为数字)
+
+6 增加新用户
+	增加用户是超级管理员才有的权限，增加完用户的时候是没有密码的，需要设定之后才可登陆，下边的m参数代表自动建立用户的登入目录
+	1.1 useradd -m newUser 
+	1.2 passwd newUser
+
+7 sudo 命令：
+	sudo是linux系统管理指令，是允许系统管理员让普通用户执行一些或者全部的root命令的一个工具
+	
+8、改变用户权限
+
+	****linux文件权限的描述格式解读
+	drwxr-xr-x      （也可以用二进制表示  111 101 101  -->  755）
+
+	d：标识节点类型（d：文件夹   -：文件  l:链接）
+	r：可读   w：可写    x：可执行 
+	第一组rwx：  表示这个文件的拥有者对它的权限：可读可写可执行
+	第二组r-x：  表示这个文件的所属组对它的权限：可读，不可写，可执行
+	第三组r-x：  表示这个文件的其他用户（相对于上面两类用户）对它的权限：可读，不可写，可执行
+
+
+	****修改文件权限
+	chmod g-rw haha.dat    表示将haha.dat对所属组的rw权限取消
+	chmod o-rw haha.dat 	表示将haha.dat对其他人的rw权限取消
+	chmod u+x haha.dat      表示将haha.dat对所属用户的权限增加x
+
+	也可以用数字的方式来修改权限
+	chmod 664 haha.dat   
+	就会修改成   rw-rw-r--
+
+	改变文件所有者和群组
+		chmod [-R] username:groupname fileName
+		其中-R是递归的。
+
+	如果要将一个文件夹的所有内容权限统一修改，则可以-R参数
+	chmod -R 770 aaa/
+	chown angela:angela aaa/    <只有root能执行>
+
+	目录没有执行权限的时候普通用户不能进入
+	文件只有读写权限的时候普通用户是可以删除的(删除文件不是修改它,是操作父及目录),只要父级目录有执行和修改的权限
+
+9. 动态的跟踪文件记录
+	tail -f fileName
+	如果我们需要看tomcat的日记记录的话，就可以用这个命令来进行查看
+
+10. 配置主机之间的免密ssh登陆
+	假如 A  要登陆  B
+	在A上操作：
+	%%首先生成密钥对
+	ssh-keygen   (提示时，直接回车即可)
+	%%再将A自己的公钥拷贝并追加到B的授权列表文件authorized_keys中
+	ssh-copy-id   B
+
+
+
+
+
+
+

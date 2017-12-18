@@ -1,0 +1,49 @@
+Linux的基本配置
+
+1.	修改主机名
+	vi /etc/sysconfig/network
+	修改HOSTNAME
+2. 	修改IP地址
+	vi /etc/sysconfig/network-script/ifcfg-ens33
+	IPADDR=IP地址
+	NETMASK=子网掩码 # 作用是用来判断自己属于哪个网段，一般为255.255.255.0
+					 # 网段判断方法用子网掩码和IP做与操作即可判断出所属网段
+	GATEWAY=网关 (一般是路由)
+	DNS=域名解析服务 # 一般填上网关即可
+3.	修改IP地址和主机名的映射关系
+	vi /etc/hosts
+	在文件后边追加
+	127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+	::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+	192.168.33.129 centmini129
+	192.168.33.130 centmini130
+4.	安装jdk
+	4.1 解压压缩包
+		tar -zxvf jdk-7u72-linux-x64.tar.gz 
+	4.2 设置环境变量
+		vi /etc/profile
+		增加以下内容
+		export  JAVA_HOME=/usr/java/jdk1.7.0_72
+		export  CLASSPATH=.:$JAVA_HOME/jre/lib/rt.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+		export  PATH=$PATH:$JAVA_HOME/bin
+	4.3 重置系统环境变量
+		$ source /etc/profile
+5.	Tomcat的安装
+	5.1 下载Tomcat
+	5.2 安装Tomcat（tar.gz格式）
+		5.2.1 直接解压文件
+			tar -zxvf apache-tomcat-7.0.68.tar.gz 
+		5.2.2 如有需要的话可以对解压后的文件进行重命名操作，但我感觉没什么用
+			 mv apache-tomcat-7.0.68 tomcat
+	2.3 安装后的测试
+		一般安装成功之后我们可以在Windows机上登录ip地址进行一个测试，看看是否能够登录
+		http://ip:8080
+		查看Tomcat是否成功启动，如果不能显示一般需要在Linux中开放防火墙的8080端口
+		5.3.1 Linux下面的防火墙里面开放8080端口 使用命令如下：
+			5.3.1.1 编辑文件
+				vim /etc/sysconfig/iptables
+			5.3.1.2 打开之后按键盘（i）进入编辑模式，写入开发8080端口，增加下边这一行
+				-A INPUT  -m state --state NEW -m tcp --dport 8080 -j ACCEPT
+			5.3.1.3 重启防火墙
+				service iptables restart 
+6.	MySql的安装
