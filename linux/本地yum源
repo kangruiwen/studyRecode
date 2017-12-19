@@ -1,0 +1,37 @@
+本地yum源
+	1. 挂载虚拟镜像iso到虚拟机vm
+		mkdir /mnt/cdrom
+		mount /dev/cdrom /mnt/cdrom
+		#mount -t iso9660 -o ro /dev/cdrom/ /mnt/cdrom 
+	2.	修改yum源配置
+		进入yum源的配置目录
+		cd /etc/yum.repo.d/
+		有类似如下目录结构
+			-rw-r--r--. 1 root root 1926 Nov 27  2013 CentOS-Base.repo
+			-rw-r--r--. 1 root root  638 Nov 27  2013 CentOS-Debuginfo.repo
+			-rw-r--r--. 1 root root  630 Nov 27  2013 CentOS-Media.repo
+			-rw-r--r--. 1 root root 3664 Nov 27  2013 CentOS-Vault.repo
+		可以打开看一下不同的目录对应着不同的yum源
+		我们可以选择打开CentOS-Media.repo，并对其进行修改,删除baseurl的值，并修改为挂载点,其余不变
+
+		[c6-media]
+		name=CentOS-$releasever - Media
+		baseurl=file:///mnt/cdrom/
+		gpgcheck=1
+		enabled=0
+		gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6
+	3.	回退到yum源的配置目录下
+			因为yum源配置文件都是以repo结尾，因为自己并不非常清楚具体是先加载那个yum源，所以我们可以对不
+		需要的yum进行重命名：
+			rename .repo .repo.bak *
+			renmae CentOS-Media.repo.bak CentOS-Media.repo CentOS-Media.repo.bak
+		其实第行可以改为
+			rename .repo.bak .repo CentOS-Media.repo.bak 
+	4.	更新yum配置
+			#yum clean all
+			#yum makecache
+	5.	yum的使用
+		
+
+
+
