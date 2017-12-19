@@ -24,7 +24,8 @@ Linux的基本配置
 		vi /etc/profile
 		增加以下内容
 		export  JAVA_HOME=/usr/java/jdk1.7.0_72
-		export  CLASSPATH=.:$JAVA_HOME/jre/lib/rt.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+		export  CLASSPATH=.:$JAVA_HOME/jre/lib/rt.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/
+		tools.jar
 		export  PATH=$PATH:$JAVA_HOME/bin
 	4.3 重置系统环境变量
 		$ source /etc/profile
@@ -47,3 +48,43 @@ Linux的基本配置
 			5.3.1.3 重启防火墙
 				service iptables restart 
 6.	MySql的安装
+	注：https://www.cnblogs.com/starof/p/4680083.html
+	由于CentOS 7 版本将MySQL数据库软件从默认的程序列表中移除，用mariadb代替了。
+	MariaDB数据库管理系统是MySQL的一个分支，主要由开源社区在维护，采用GPL授权许可。开发这个分
+	支的原因之一是：甲骨文公司收购了MySQL后，有将MySQL闭源的潜在风险，因此社区采用分支的方式来
+	避开这个风险。MariaDB的目的是完全兼容MySQL，包括API和命令行，使之能轻松成为MySQL的代替品。
+	
+	6.1 安装mariadb，大小59 M。
+	[root@yl-web yl]# yum install mariadb-server mariadb 
+	mariadb数据库的相关命令是：
+	systemctl start mariadb  	#启动MariaDB
+	systemctl stop mariadb  	#停止MariaDB
+	systemctl restart mariadb 	#重启MariaDB
+	systemctl enable mariadb  	#设置开机启动
+	启动之后就可以正常使用mysql了
+	# mysql -u root -p
+
+	6.2 官网下载安装mysql-server
+	# wget http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm
+	# rpm -ivh mysql-community-release-el7-5.noarch.rpm
+	# yum install mysql-community-server
+
+	安装成功后重启mysql服务。
+	# service mysqld restart
+	初次安装mysql，root账户没有密码。
+	[root@yl-web yl]# mysql -u root 
+	mysql> set password for 'root'@'localhost' =password('youPwd');
+
+	6.3 配置mysql
+	mysql配置文件为/etc/my.cnf
+	最后加上编码配置
+	[mysql]
+	default-character-set =utf8
+	这里的字符编码必须和/usr/share/mysql/charsets/Index.xml中一致。
+
+	把在所有数据库的所有表的所有权限赋值给位于所有IP地址的root用户。
+	mysql> grant all privileges on *.* to root@'%'identified by 'password';
+	如果是新用户而不是root，则要先新建用户
+	mysql>create user 'username'@'%' identified by 'password';  
+	此时就可以进行远程连接了。
+
