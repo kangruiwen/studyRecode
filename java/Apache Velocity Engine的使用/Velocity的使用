@@ -3,7 +3,47 @@ Velocity的使用
 转自：
 	http://ifeve.com/apache-velocity-dev/
 	https://www.cnblogs.com/hongten/archive/2013/03/09/hongten_apache_velocity.html
+1. Velocity 是什么
 
+2. Velocity 能做什么
+
+3. Velocity Template Language(VTL)介绍
+	3.1 简单介绍
+	VTL使用引用（references）在web内嵌套动态内容。一个变量就是一种类型的reference。它可以指向
+java代码中定义的对象，或者在当前页面内使用VTLstatement定义的变量。下面是一个VTLstatement的例子，
+它可以被嵌套到HTML代码中：
+
+	#set($a = "Velocity")
+
+	和所有VTL statement一样，这个statement以#字符开始并且包含一个directive:set.当一个用户请求
+你的页面时，Velocity Templating Engine将查询整个页面以便发现所有的#字符，然后确定哪些是VTL
+statement。#字符后紧跟一个directive:set，这个set directive 使用一个表达式(以一对圆括号封闭)分
+配一个值给变量$a。 
+
+记住以下的规则： 使用$字符开始的references用于得到什么；使用#字符开始的directives用于作些什么
+
+	一旦某个变量被分配了一个值，那么你就可以在HTML文件的任何地方引用它。在下面的例子中，一个值
+被分配给$foo变量，并在其后被引用。 
+
+	<html>
+	    <body>
+	        #set ( $foo = “Velocity” )
+	        Hello $foo World!
+	    </body>
+	</html>
+
+	上面的实现结果是在页面上打印“Hello Velocity World！” 
+	3.2 注释
+
+	单行注释
+	## This is a single line comment. 
+
+	多行注释
+	#*
+	   	Thus begins a multi-line comment. Online visitors won’t
+	   	see this text because the Velocity Templating Engine will
+		ignore it.
+    *#
 
 
 

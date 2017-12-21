@@ -112,7 +112,32 @@ Linux常用命令
 	%%再将A自己的公钥拷贝并追加到B的授权列表文件authorized_keys中
 	ssh-copy-id   B
 
+11. rename
+	rename命令用字符串替换的方式批量改变文件名。 
+	rename oldStr newStr fileList
+	原字符串：将文件名需要替换的字符串； 
+	目标字符串：将文件名中含有的原字符替换成目标字符串； 
+	文件：指定要改变文件名的文件列表。
+	rename .repo .repo.bak *
+	renmae CentOS-Media.repo.bak CentOS-Media.repo CentOS-Media.repo.bak
 
+	另外rename支持通配符
+	? 可替代单个字符 
+	* 可替代多个字符 
+	[charset] 可替代charset集中的任意单个字符
+
+	文件夹中有这些文件foo1, ..., foo9, foo10, ..., foo278 
+
+		如果使用rename foo foo0 foo?，会把foo1到foo9的文件重命名为foo01到foo09，重命名的文件只
+	是有4个字符长度名称的文件，文件名中的foo被替换为foo0。 
+
+		如果使用rename foo foo0 foo??，foo01到foo99的所有文件都被重命名为foo001到foo099，只重命
+	名5个字符长度名称的文件，文件名中的foo被替换为foo0。 
+
+		如果使用rename foo foo0 foo*，foo001到foo278的所有文件都被重命名为foo0001到foo0278，所
+	有以foo开头的文件都被重命名。 如果使用rename foo0 foo foo0[2]*，从foo0200到foo0278的所有文件都被重命名为foo200到foo278，文件名中的foo0被替换为foo。
+
+	如果单纯的只是修改一个文件的名称，可以使用mv
 
 
 
