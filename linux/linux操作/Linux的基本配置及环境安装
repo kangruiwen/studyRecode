@@ -88,3 +88,24 @@ Linux的基本配置
 	mysql>create user 'username'@'%' identified by 'password';  
 	此时就可以进行远程连接了。
 
+7.	httpd的安装
+
+	说明：
+		这是一个apache维护的一个开源服务器软件
+		可以看以下文档参考：
+		http://blog.csdn.net/u013372487/article/details/45113243
+		http://blog.51cto.com/ghbsunny/1970486
+		http://blog.51cto.com/xuding/1733964
+		http://blog.51cto.com/centod/1538311
+
+	7.1 yum -y install httpd
+		安装完之后可以进行端口查看
+		netstat -ntlp
+		可以看到httpd一直在监控80端口
+
+8. centos的防火墙配置
+
+
+	
+
+

@@ -1,0 +1,9 @@
+SecurtCRT 的使用
+	1. 文件的上传：
+		1.1 可以使用sftp工具：  alt+p 调出后，用put命令上传
+		上传（如果不cd指定目录，则上传到当前用户的主目录）：
+		sftp> cd /home/   
+		sftp> put C:\Users\Administrator\Desktop\day02\soft\jdk-7u45-linux-x64.tar.gz
+		下载（lcd指定下载到本地的目标路径）
+		sftp> lcd d:/                            
+		sftp> get /home/jdk-7u45-linux-x64.tar.gz

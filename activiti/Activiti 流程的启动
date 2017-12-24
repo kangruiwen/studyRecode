@@ -1,0 +1,33 @@
+Activiti 流程的启动
+
+部分总结自
+http://blog.csdn.net/whatlookingfor/article/details/52997982
+http://blog.csdn.net/luckyzhoustar/article/details/48650563
+http://blog.csdn.net/hejingyuan6/article/details/43850413（这个是一个业务流与Activiti整合的）
+
+1.流程实例与执行流的概念
+
+	在Activiti中，启动了一个流程后就会创建一个流程实例(ProcessInstance),简单来说流，程实例就是
+根据一次（一条）业务数据用流程驱动的入口.
+	Execution的含义就是一个流程实例（ProcessInstance）具体要执行的过程对象。
+	两者的对象映射关系：ProcessInstance（1）—> Execution(N)，其中N >= 1。 
+	每个流程实例至少会有一个执行流(execution)，如果流程中没有分支，则N=1，如果流程中出现了分支
+则N>1
+
+2.流程启动的API的区别
+	主要有三大种：
+	startProcessInstanceById()：由流程定义ID启动
+	startProcessInstanceByKey()：由流程定义KEY启动
+	startProcessInstanceByMessage():由流程Message启动
+
+	同时上边三种都类似的重载方法：
+	startProcessInstanceByXXX(XXX,Map);
+	startProcessInstanceByXXX(XXX,businessKey,Map);
+
+	下边说一下重载方法中几个参数的意义：
+	businessKey : the variables to pass, can be null.
+	variables : a key that uniquely identifies the process instance in the context or the given
+		process definition.
+
+	不过经查资料，这个businessKey应该是绑定到业务表单中去的，因为只有这样子流程才有意义。
+

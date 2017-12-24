@@ -1,0 +1,43 @@
+Activiti的受理与委托
+
+转自：http://my.oschina.net/acitiviti/blog/350957
+
+数据库act_ru_task表中有字段：
+ASSIGNEE  OWNER
+
+这两个字段的意义是：
+
+1，ASSIGNEE_（受理人）：task任务的受理人，就是执行TASK的人，这个又分两种情况（有值，NULL）
+
+    1），有值的情况：XML流程里面定义的受理人，TASK会直接填入这个人；
+
+    2），NULL：XML没有指定受理人或者只指定了候选组；
+
+没有值的时候，可以使用签收功能去指定受理人，就是候选组里面谁签收谁就成了受理人：
+
+Task task=taskService.createTaskQuery().singleResult();
+
+//签收
+
+taskService.claim(task.getId(), "billy");
+
+logger.info(taskService.createTaskQuery().singleResult().getAssignee());
+
+//结果：billy
+
+2，OWNER_（委托人）：受理人委托其他人操作该TASK的时候，受理人就成了委托人OWNER_，其他人就成了
+受理人ASSIGNEE_
+
+Task task=taskService.createTaskQuery().singleResult();
+
+//委托
+
+taskService.delegateTask(task.getId(), "cc");
+
+logger.info(taskService.createTaskQuery().singleResult().getOwner());
+
+logger.info(taskService.createTaskQuery().singleResult().getAssignee());
+
+//结果：owner是Billy，assignee是cc
+assignee容易理解，主要是owner字段容易误解，owner字段就是用于受理人委托别人操作的时候运用的字
+段

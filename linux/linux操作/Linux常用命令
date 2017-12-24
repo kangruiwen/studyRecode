@@ -139,6 +139,29 @@ Linux常用命令
 
 	如果单纯的只是修改一个文件的名称，可以使用mv
 
+12. netstat
+	在linux一般使用netstat 来查看系统端口使用情况步。
+	该命令的一般格式为：
+    netstat [选项]
+  	命令中各选项的含义如下：
+		-a 显示所有socket，包括正在监听的。
+		-n 以网络IP地址代替名称，显示出网络连接情形。
+		-t 显示TCP协议的连接情况。
+      	-u 显示UDP协议的连接情况。
+    常用格式：
+  	12.1  netstat -an | grep LISTEN
+  		0.0.0.0的就是每个IP都有的服务，写明哪个IP的就是绑定那个IP的服务。
+	12.2  netstat -tln
+  		用来查看linux的端口使用情况
+13. rpm
+	13.1 rpm -qa | grep mysql
+
+
+14. pstree 
+	进程树结构查看
+
+
+
 
 
 
