@@ -160,6 +160,16 @@ Linux常用命令
 14. pstree 
 	进程树结构查看
 
+15. 用户的申请与密码的增加
+	[root@localhost ~]# useradd angle
+	[root@localhost ~]# passwd angle
+	更改用户 angle 的密码 。
+	新的 密码：
+	重新输入新的 密码：
+	passwd：所有的身份验证令牌已经成功更新。
+
+	useradd angle 是增加angle用户
+	passwd angle 是给用户angle增加密码
 
 
 
