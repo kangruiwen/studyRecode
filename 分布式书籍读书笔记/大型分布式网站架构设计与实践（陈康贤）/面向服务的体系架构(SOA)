@@ -1,0 +1,72 @@
+面向服务的体系架构(SOA)
+
+1. 基于TCP的RPC
+	
+1.1 什么是RPC 
+	RPC全称为 Remote Process Call 既远程过程调用，常用的方案有：RMI、WebService等
+
+	RPC的调用
+				RPC
+	Consumer --------> Provider
+
+	如上边所示：RPC的实现分为客户端和服务端，既服务的调用方与服务的提供方。在RPC过程中我们
+	还需要对数据进行序列化和反序列化的操作，用以方便传输。
+
+	但是如果当服务调用方发展到了一定的规模，如淘宝双11的时候，势必会对服务的提供方造成非常
+	大的压力，因此服务需要进行扩容，并且随着服务提供者的增加与业务的增加，不同的服务之间还
+	需要进行分组，用以隔离不同的业务，避免相互影响。这时，服务的路由和负载均衡就必须要考虑
+	了。
+
+1.2 序列化和反序列化
+	因为在网络上传输数据只能传输二进制数据，所以不论什么类型的数据都要转换为二进制。所以在
+	面向对象的网络编程中，发送方需要将对象转换成二进制数据，而接收方需要将收到的二进制数据
+	再恢复为对象。所以：
+		对象的序列化：  对象   -----> 二进制 
+		对象的反序列化：二进制 -----> 对象
+	序列化和反序列化的成熟方案有很多.
+
+	1.2.1 Java内置的序列化方案
+		//输出流
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		ObjectOutputStream out = new ObjectOutputStream(os);
+		out.writeObject(obj);
+		byte objByte = os.toByteArray();
+
+		//输入流
+		ByteArrayInputStream is = new ByteArrayInputStream();
+		ObjectInputStream in = new ObjectInputStream(in);
+		Person person = (Person)in.readObject();
+
+	1.2.1 使用Hessian的序列化方案
+		使用Hessian进行序列化需要引入hessian-4.0.7.jar,针对基于Java的Hessian的序列化和反序
+		列化关键代码如下：
+		//输出流
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		//Hessian的序列化输出
+		HessianOutput ho = new HessianOutput(os);
+		ho.writeObject(obj);
+		byte objByte = os.toByteArray();
+
+		//输入流
+		ByteArrayInputStream is = new ByteArrayInputStream();
+		HessianInput hi = new HessianInput(is);
+		Person person = (Person)hi.readObject();
+
+1.3 基于TCP协议实现的RPC
+
+	public interface SayHelloService {
+		public String sayHello(String arg);
+	}
+
+	// 服务的实现
+	public class SayHelloServiceImpl implements SayHelloService {
+		public String sayHello(String arg){
+			if(args.equals("hello")){
+				return "hello";
+			}else{
+				return "byebye";
+			}
+		}
+	}
+	
+
