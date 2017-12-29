@@ -1,0 +1,88 @@
+systemctl命令
+	
+1.说明
+	CentOS 7.x开始，CentOS开始使用systemd服务来代替daemon，原来管理系统启动和管理系统服务
+	的相关命令全部由systemctl命令来代替。
+
+2.相关参数
+
+2.1 与service对比的相关命令
+	systemctl start [unit type] : 启动服务
+	systemctl stop [unit type] : 停止服务
+	systemctl restart [unit type] : 重启服务 
+	systemctl status [unit type] : 查看服务运行情况
+	systemctl reload [unit type] 
+	重新加载服务，加载更新后的配置文件（并不是所有服务都支持这个参数，比如network.service）
+
+	eg：
+	#启动网络服务
+	systemctl start network.service
+
+	#停止网络服务
+	systemctl stop network.service
+
+	#重启网络服务
+	systemctl restart network.service
+
+	#查看网络服务状态
+	systemctl status network.serivce
+
+2.2 与chkconfig对比的相关命令
+	systemctl enable [unit type]	设置服务开机启动
+	systemctl disable [unit type]	设备服务禁止开机启动
+
+	eg：
+	#停止cup电源管理服务
+	systemctl stop cups.service
+
+	#禁止cups服务开机启动
+	systemctl disable cups.service
+
+	#查看cups服务状态
+	systemctl status cups.service
+
+	#重新设置cups服务开机启动
+	systemctl enable cups.service
+
+2.3 systemctl特殊的用法
+	systemctl is-active [unit type]	查看服务是否运行
+	systemctl is-enable [unit type]	查看服务是否设置为开机启动
+	systemctl mask [unit type]	注销指定服务
+	systemctl unmask [unit type]	取消注销指定服务
+
+	eg：
+	#查看网络服务是否启动
+	systemctl is-active network.service
+
+	#检查网络服务是否设置为开机启动
+	systemctl is-enable network.service
+
+	#停止cups服务
+	systemctl stop cups.service
+
+	#注销cups服务
+	systemctl mask cups.service
+
+	#查看cups服务状态
+	systemctl status cups.service
+
+	#取消注销cups服务
+	systemctl unmask cups.service
+
+2.4 init命令与systemctl命令对比
+	init 0	systemctl poweroff	系统关机
+	init 6	systemctl reboot	重新启动
+
+	systemctl suspend	进入睡眠模式
+	systemctl hibernate	进入休眠模式
+	systemctl rescue	强制进入救援模式
+	systemctl emergency	强制进入紧急救援模式
+
+3 关闭防火墙
+	Centos 7.x 中取消了iptables, 用firewall取而代之。要关闭防火墙并禁止开机启动服务使用
+	下面的命令:
+	
+	systemctl stop firewalld.service
+	systemctl disable firewalld.service
+
+
