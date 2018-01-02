@@ -1,0 +1,64 @@
+centOS磁盘爆满，查找大文件并清理
+
+今天碰到一个情况，使用sftp向服务器上传war包的时候，总是上传一半失败，找原因找了好久没
+发现，最后怀疑是不是磁盘满了，就把日志文件给清理了一下，再次上传果然成功了
+
+以下内容转自 http://hi.baidu.com/11haiou/item/f3a4878b601e084e840fab17
+
+linux操作系统中，经常会遇到磁盘空间满的问题。遇到这样的问题，先查下是什么文件过大或过多引
+起的，至于引起这个更深一层的原因，先不探讨。怎么查看大文件所在的路径，linux中有一个命令，
+叫du
+先贴命令：
+du -m --max-depth=1或du -h --max-depth=1du
+用于统计linux中文件或目录所占磁盘空间的大小du参数
+-m：以M为单位展示查询结果
+-h：以K、M、G为单位展示查询结果，提高信息可读性
+
+[root@appserver disk1]# df -hl
+Filesystem                   Size  Used Avail Use% Mounted on
+/dev/mapper/system-LogVol00  9.9G  4.5G  5.0G  48% /
+tmpfs                        3.9G   72K  3.9G   1% /dev/shm
+/dev/sda1                    194M   35M  150M  19% /boot
+/dev/mapper/system-LogVol02   69G   69G     0 100% /disk1
+/dev/mapper/system-LogVol01   20G  172M   19G   1% /home
+
+
+[root@appserver disk1]# du -h --max-depth=1du
+74M	./redis
+18M	./LHGA
+394M	./statsdb
+231M	./monitor
+293M	./datamanage
+5.9G	./airport
+246M	./soft
+16K	./lost+found
+286M	./cms
+7.4G	.
+
+
+[root@appserver disk1]# du -h --max-depth=2du
+73M	./redis/redis-4.0.6
+74M	./redis
+18M	./LHGA
+387M	./statsdb/apache-tomcat-6.0.53
+394M	./statsdb
+27M	./monitor/JobMain_NW_lib
+27M	./monitor/collect
+8.0K	./monitor/heartbeat
+368K	./monitor/collection
+175M	./monitor/jk
+231M	./monitor
+284M	./datamanage/apache-tomcat-8.5.15
+224K	./datamanage/file
+293M	./datamanage
+345M	./airport/run_message
+87M	./airport/bak2017
+9.2M	./airport/redis
+2.8G	./airport/test_openservice
+434M	./airport/test_datacollect
+262M	./airport/test_ckg_cqa
+416M	./airport/test_statsdb
+328M	./airport/test_dataplat
+216M	./airport/test_sniper
+394M	./airport/test_plat
+
