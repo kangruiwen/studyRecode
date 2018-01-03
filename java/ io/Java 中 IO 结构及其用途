@@ -1,0 +1,83 @@
+Java 中 IO 结构及其用途
+
+1.  按照处理数据的单位可以分为字节流与字符流
+	按照输入输出的方向可以分为输入流和输出流
+
+对文件的操作：
+使用FileInputStream和FileOutputStream
+	FileInputStream fis = null;  
+    FileOutputStream fos = null;  
+    try {  
+        fis = new FileInputStream("F:\\inFile.bmp"); 
+        fos = new FileOutputStream("F:\\outFile.bmp");   
+        byte[] buffer = new byte[1024];  
+        int len = 0;  
+        while((len=fis.read(buffer))!=-1) {  
+        	fos.write(buffer,0,len);  
+        }  
+    }
+使用FileReader和FileWriter
+	FileReader fr = new FileReader("F:\\inFile.bmp");
+	FileWriter fw = new FileWriter("F:\\outFile.bmp");
+	char[] buf = new char[1024];
+	// 将Denmo中的文件读取到buf数组中。
+	int num = 0;
+	while ((num = fr.read(buf)) != -1) {
+		// 分配一个新的String,包含从offest开始的count个字符
+		fw.write(new String(buf, 0, num));
+	}
+	fr.close();
+	fw.close();  
+
+1.1 FileWriter 与 FileOutputStream 的区别
+	其实最显眼的区别就是一个操作的是字符，一个操作的是字节，但是最终其实还是转换为字节
+	进行传输了，这点很好理解，毕竟计算机上的数据传输就是以字节为单位的。传输的本质还是
+	传递的二进制数据。
+1.1.1 FileWriter 
+
+	FileWriter fw = new FileWriter("F:\\1.txt");
+	fw.write("hello world");
+	// 输出为空
+	
+	FileWriter fw = new FileWriter("F:\\1.txt");
+	fw.write("hello world");
+	fw.flush();
+	fw.write("first_test");
+	// 输出为hello world
+	
+	FileWriter fw = new FileWriter("F:\\1.txt");
+	fw.write("hello world");
+	fw.flush();
+	fw.write("first_test");
+	// 输出为hello worldfirst_test
+	
+	原因：
+	（1）FileWriter继承自OutputStreamWriter，在FileWriter中除了构造函数并没有其它的方法，
+		 在FileWriter的构造函数中，会先封装出一个OutputStream传递给父类OutputStreamWriter
+		 构造出父类的对象，调用FileWriter的write方法，其实就是调用的OutputStreamWriter的
+		 write方法
+	（2）在OutputStreamWriter中有一个StreamEncoder对象，调用OutputStreamWriter的write方
+		 法，其实就是调用的StreamEncoder的write方法
+	（3）在StreamEncoder中有一个字节缓冲区，会先把准备写入目的的字符先转变为字节，等缓冲
+		 区满了或者流被刷新后，流中的数据就写到目的中去。所以，上面准备写如的字符，由于
+		 没有刷新流，所以实际上是写到了StreamEncoder的字节缓冲区中去了；所以文件中没有内容
+	结论：
+		在使用FileWrite的时候必须flush数据或者用完之后关闭流
+
+1.1.2 FileOutputStream
+	FileOutputStream fos=new FileOutputStream("c:\test.txt");  
+	fos.write("hello world".getBytes());  
+	//输出 hello world
+	原因：
+	FileOutputStream直接继承自OutputStream，调用FileOutputStream的write方法的时候，
+	实际上就在调用底层的写方法，把数据直接写到文件中去了，没有缓存。
+
+	注意：
+	但是虽然这个不用刷新或者是关闭流都能将数据给写入，但是我们还是需要将流给关闭的，这是
+	因为像JVM的垃圾回收，是不能清理一些Java内置对象，像套接字，数据库连接。必须显示的使用
+	close()方法。如果长时间不清理最终可能将连接数撑爆。
+
+
+
+
+
