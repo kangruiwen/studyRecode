@@ -15,8 +15,9 @@ Linux的基本配置
 	在文件后边追加
 	127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 	::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-	192.168.33.129 centmini129
-	192.168.33.130 centmini130
+	192.168.33.129 hadoop129
+	192.168.33.130 hadoop130
+	...
 4.	安装jdk
 	4.1 解压压缩包
 		tar -zxvf jdk-7u72-linux-x64.tar.gz 

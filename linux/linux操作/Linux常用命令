@@ -171,6 +171,24 @@ Linux常用命令
 	useradd angle 是增加angle用户
 	passwd angle 是给用户angle增加密码
 
+16. 软连接的创建与删除
+	
+	ln -s 源文件 目标文件
+	#说明：目标文件就为软连接
+
+	#首先我们先来创建一个文件
+	mkdir test_chk
+	touch test_chk/test.txt   
+	#这一步随便在这个test.txt里写点东东即可
+	vim test_chk/test.txt 
+	#下面我们来创建test_chk目录 的软链接
+	ln-s test_chk     test_chk_ln
+	#软链接创建好了，我们来看看怎么删除它
+	#正确的删除方式（删除软链接，但不删除实际数据）
+	rm -rf  ./test_chk_ln
+	#错误的删除方式 (这样就会把原来test_chk下的内容删除)
+	rm -rf ./test_chk_ln/
+
 
 
 

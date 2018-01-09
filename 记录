@@ -1,0 +1,22 @@
+记录
+
+1. mount /mnt/cdrom /dev/cdrom 挂载实现光盘
+2. ngnix 和 keepalived实现高可用
+3. scp 命令
+4. yum 命令
+5. /dev/cdrom 文件
+6. 创建软连接 ln
+7. httpd 配置
+8. centos7 系统服务的启动与配置
+9. 如何配置开机启动
+10.如何配置服务
+11.ssh免密登陆的配置与其中文件的含义	
+12.ssh-copy-id
+
+13. zookeeper 算法： PAXOS--->Zab 投票算法
+14. jps 命令的使用
+15. pstree的使用与理解
+16. 定义变量的时候的export与source的含义
+	export出来的东西只有它当前的进程与它的子进程中有
+	source会把定义在脚本中的变量放在当前的shell里边
+17. root/.bashrc  root/.bashrc.profile  etc/profile 几个文件夹
