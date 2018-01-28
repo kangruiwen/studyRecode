@@ -98,7 +98,8 @@ shell-01-变量、控制流、函数
 	格式 :expr m + n 或$((m+n)) 注意expr运算符间要有空格
 	例如计算(2+3)*4的值
 	2.1	分步计算
-		S=`expr 2 + 3`	expr $S \* 4
+		S=`expr 2 + 3` 
+		expr $S \* 4
 	2.2	一步完成计算
 		expr `expr 2 + 3 ` \* 4
 		echo `expr \`expr 2 + 3\` \* 4`

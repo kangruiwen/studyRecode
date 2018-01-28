@@ -20,3 +20,7 @@
 	export出来的东西只有它当前的进程与它的子进程中有
 	source会把定义在脚本中的变量放在当前的shell里边
 17. root/.bashrc  root/.bashrc.profile  etc/profile 几个文件夹
+
+18.	kafka --- > storm / sparkStreaming -- > 实时处理
+
+19. su  sudo

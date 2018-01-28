@@ -1,0 +1,226 @@
+hadoop 2.6.4 源码包的重新编译及环境变量的配置
+
+一、为什么需要将hadoop的源码包重新编译一遍
+	hadoop虽然是基于Java开发的工具，但是为了某些需求和操作引入了本地库（Native Libraries）。个人感
+觉这些本地库文件有些是C开发出来的（因为里边有很多的.so后缀的文件），就有了平台相关性，所以需要在自
+己的环境下对Hadoop进行一次重新编译。
+
+二、编译前的环境准备
+	建议这个时候切换到root用户，以免出现很多权限不够的情况
+2.1 MAVEN安装
+	解压 apache-maven-3.5.2-bin.tar.gz 到/opt/目录
+	输入命令：tar -zxvf apache-maven-3.5.2-bin.tar.gz -C /opt/
+	在/etc/profile文件中配置环境变量 M2_HOME PATH
+	source /etc/profile 使其生效
+
+	输入mvn -v 命令进行验证，输出版本信息表示安装配置成功
+2.2 ANT安装
+	解压 apache-ant-1.9.4-bin.tar.gz 到/opt/目录
+	输入命令：tar -zxvf apache-ant-1.9.4-bin.tar.gz -C /opt/
+	修改/etc/profile 配置，增加 ANT 环境配置 ANT_HOME   PATH
+	保存后使用 source /etc/profile 使修改配置即时生效
+	使用 ant-version 命令进行验证
+2.3 FINDBUGS安装 
+	解压 findbugs-3.0.0.tar.gz 到/opt/目录
+	输入命令：tar -zxvf findbugs-3.0.0.tar.gz -C /opt/
+	修改/etc/profile 配置，增加 FINDBUGS 环境配置
+	保存后使用 source /etc/profile 使修改配置即时生效
+	使用 findbugs-version 命令进行验证
+2.4 PROTOBUF安装
+	解压 protobuf-2.5.0.tar.gz 到/opt/目录
+	输入命令：tar -zxvf protobuf-2.5.0.tar.gz -C /opt/
+	安装 protobuf 前需要有相应的c++编译环境在cenos下可以使用yum进行环境准备
+	输入命令：yum install glibc-headers
+	输入命令：yum install gcc-c++
+	如果有的话并且是最新版本的话就没有什么问题，没有的话会直接进行安装
+	接下来开始protobug的编译和安装，输入以下命令：（另外说明，这个编译安装是linux的常规方式）
+	1. 进行protobuf的解压文件中： cd protobuf-2.5.0
+	2.输入：./configure（这一步用来检测你的安装平台的目标特征的。比如它会检测你是不是有CC或GCC，并
+	不是需要CC或GCC，它是个shell脚本，如果没有gcc的话会报错的，所以上边让准备一下C++编译环境）
+	3.输入：make（是用来编译的，它从当前文件目录下的Makefile中读取指令，然后编译。）
+	4.输入：make check（这一步就是对上一步make的检查了，要确保make是没有错误的，也就是这一步的test
+	test、check要全部是 OK 的，error 为0）
+	5.输入：make install（这是用来安装的，它也从Makefile中读取指令，安装到指定的位置。）
+	最后输出protoc --version 命令进行验证
+2.5 安装相关依赖包
+	cmake,openssl-devel,ncurses-devel  依赖包
+	输入：yum install cmake
+	输入：yum install openssl-devel
+	输入：yum install ncurses-devel
+三、Hadoop的编译
+	自己hadoop的管理是用了hadoop账户进行管理，首先将源码包解压的hadoop的工作空间中。
+	进入已解压的hadoop源码目录：cd hadoop-2.4.0-src
+	输入命令：mvn clean install -DskipTests
+	输入命令：mvn package -Pdist,native -DskipTests -Dtar
+	以上两步都比较费时间，可能需要1个小时左右，并且需要全程联网
+	等待编译成功后：cd hadoop-2.6.4-src/hadoop-dist/target/hadoop-2.4.0/lib/native
+	使用 file * 命令可以看出已经编译为64位的了
+
+	进入：cd /home/hadoop/hadoop-compler/hadoop-2.6.4-src/hadoop-dist/target
+	有：
+	drwxrwxr-x. 2 hadoop hadoop        28 1月  27 21:50 antrun
+	-rw-rw-r--. 1 hadoop hadoop      1884 1月  27 22:32 dist-layout-stitching.sh
+	-rw-rw-r--. 1 hadoop hadoop       657 1月  27 22:32 dist-tar-stitching.sh
+	drwxrwxr-x. 9 hadoop hadoop       149 1月  27 22:32 hadoop-2.6.4
+	-rw-rw-r--. 1 hadoop hadoop 180768698 1月  27 22:32 hadoop-2.6.4.tar.gz
+	-rw-rw-r--. 1 hadoop hadoop      2782 1月  27 21:50 hadoop-dist-2.6.4.jar
+	-rw-rw-r--. 1 hadoop hadoop 362436609 1月  27 22:33 hadoop-dist-2.6.4-javadoc.jar
+	drwxrwxr-x. 2 hadoop hadoop        51 1月  27 22:33 javadoc-bundle-options
+	drwxrwxr-x. 2 hadoop hadoop        28 1月  27 21:50 maven-archiver
+	drwxrwxr-x. 2 hadoop hadoop         6 1月  27 21:50 test-dir
+
+	其中hadoop-2.6.4是编译好的文件
+	hadoop-2.6.4.tar.gz 是编译好的文件的压缩包。将hadoop拷贝到自己的想要的文件目录下，
+
+	自己复制在了~/apps/ 目录下 
+	输入命令：cp -R hadoop-2.6.4 ~/apps/ 
+
+四、Hadoop环境变量的配置
+
+4.1 先看一下hadoop的目录结构
+	drwxrwxr-x. 2 hadoop hadoop   194 1月  27 22:54 bin 
+	drwxrwxr-x. 3 hadoop hadoop    20 1月  27 22:54 etc
+	drwxrwxr-x. 2 hadoop hadoop   106 1月  27 22:54 include
+	drwxrwxr-x. 3 hadoop hadoop    20 1月  27 22:54 lib
+	drwxrwxr-x. 2 hadoop hadoop   239 1月  27 22:54 libexec
+	-rw-r--r--. 1 hadoop hadoop 15429 1月  27 22:54 LICENSE.txt
+	-rw-r--r--. 1 hadoop hadoop   101 1月  27 22:54 NOTICE.txt
+	-rw-r--r--. 1 hadoop hadoop  1366 1月  27 22:54 README.txt
+	drwxrwxr-x. 2 hadoop hadoop  4096 1月  27 22:54 sbin
+	drwxrwxr-x. 4 hadoop hadoop    31 1月  27 22:54 share
+bin 文件存放了hadoop，hdfs，mapred的相关命令，从cmd可以看出支持windows。
+sbin 各种启动和停止的命令。
+etc 下存放了hadoop配置文件
+lib 下的native为本地库，hadoop编译时需要的本地库，例如编译c++等。
+share 为自己的jar包和依赖jar包
+
+4.2 环境变量的配置
+	4.2.1 配置 hadoop.env.sh
+		vim hadoop-env.sh
+		#在第25行左右
+		export JAVA_HOME=/usr/java/jdk1.7.0_65
+	4.2.2 配置 core-site.xml
+		<configuration>
+	        <property>
+                <name>fs.defaultFS</name>
+                <value>hdfs://192.168.33.129:9000</value>
+	        </property>
+	        <property>
+                <name>hadoop.tmp.dir</name>
+                <value>/home/hadoop/hapdata</value>
+	        </property>
+		</configuration>
+		这个是它的最小化配置其余使用默认即可
+		fs.defaultFS是指定hadoop所使用的文件系统，使用URI指定文件系统的namenode是那个，端口是多少。
+		hadoop.tmp.dir指定每台机器的hadoop运行时产生文件的存储目录。
+	4.2.3 配置 hdfs-site.xml 
+		<property>
+            <name>dfs.replication</name>
+            <value>2</value>
+        </property>
+        这个是配置hdfs副本的数量，默认是3
+    4.2.4 配置 mapred-site.xml
+    	这一步的配置是指定mapreduce运行在yarn平台上
+   		<property>
+            <name>mapreduce.framework.name</name>
+            <value>yarn</value>
+        </property>
+        其中mapred-site.xml刚开始叫做mapred-site.xml.template
+        配置完成之后我们可以把template去掉就行
+        mv mapred-site.xml.template mapred-site.xml
+    4.2.5 配置yarn-site.xml
+    	<!-- 指定YARN的老大（ResourceManager）的地址 -->
+        <property>
+                <name>yarn.resourcemanager.hostname</name>
+                <value>192.168.33.129</value>
+        </property>
+        <!-- reducer获取数据的方式，nodemanager为mapreduce提供一个辅助的服务 -->
+        <property>
+                <name>yarn.nodemanager.aux-services</name>
+                <value>mapreduce_shuffle</value>
+        </property>
+    4.2.6 工作环境变量的配置(如果datanode机器上也用hadoop相关命令，也可以配上去)
+    	vim /etc/profile
+    	export HADOOP_HOME=/home/hadoop/apps/hadoop-2.6.4
+		export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+		最后source一下就可以
+
+4.3 将配置好的apps下的hadoop分发到不同的linux系统中去
+	我们可以先配一下免密登陆
+	输入命令：ssh-keygen（这是生成密钥对）
+	输入命令：ssh-copy-id 192.168.33.13X （将自己的公钥拷贝并追加到13X的授权列表文件中）
+
+	注意：自己对自己进行远程登陆的时候也是需要密码的，因为有时候自动化脚本本不认识自身，在
+	拿到IP以后自己登陆自己也是需要验证的，所以一般对自己也需要进行免密登陆的配置。
+
+	远程复制：
+	scp -r ./apps/ 192.168.33.13X:/home/hadoop/
+
+4.4 namenode的格式化
+	在配置namenode的机器上需要对hadoop的namenode进行格式化
+	输入命令：hadoop namenode -format（这是对namenode进行初始化）
+	在最后几行中看到这个就是格式化成功了：
+	common.Storage: Storage directory /home/hadoop/hapdata/dfs/name has been successfully 
+	formatted.
+	其中/home/hadoop/hapdata就是我们刚才建立的hadoop的数据文件夹
+
+4.5 hadoop启动相关命令
+
+	4.5.1 namenode的启动
+		[hadoop@localhost sbin]$ ./hadoop-daemon.sh start namenode
+		[hadoop@localhost sbin]$ jps
+		24819 NameNode
+		24857 Jps
+	可以看到NameNode已经启动
+	另外我们可以在网页中看HDFS管理界面，默认端口是50070
+	http://192.168.33.129:50070
+
+	4.5.2 datanode的启动
+		去另外几台机器上进行datanode的启动
+		[hadoop@localhost hadoop-2.6.4]$ hadoop-daemon.sh start datanode
+		[hadoop@localhost hadoop-2.6.4]$ jps
+		1999 Jps
+		1962 DataNode
+		启动后可以在HDFS的管理控制台中看到，datanode有一个（Live Nodes 有一个）
+
+		另外datanode和namenode的握手是在刚才的core-site.xml中进行配置的
+
+		同样的方式我们可以启动其余的机器，但是这样字的启动有一个问题，如果集群特别大的时候每次这么
+		启动显的就很麻烦了
+	4.5.3 hadoop集群的启动
+		我们可以在namenode配置的机器上对hadoop中的/etc/hadoop中的配置文件slave进行配置
+		从名称中就可以看出，这时配它小弟的。默认是localhost，即默认情况下我们启动hdfs集群，它
+		的datanode是它自己.我们可以在里边配置它的小弟如：
+		[hadoop@localhost hadoop]$ vim slaves 
+		192.168.33.130
+		192.168.33.131
+		192.168.33.132
+
+		集群的启动脚本在/sbin中的start-dfs.sh
+		对应的关闭为stop-dfs.sh
+
+		一般情况下我们都是这么启动集群的
+		先启动HDFS
+		sbin/start-dfs.sh
+		
+		再启动YARN
+		sbin/start-yarn.sh
+
+		一般不要使用start-all.sh
+		这个是先启动dfs再启动yarn等的。这个出了问题不利于问题的定位
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,201 @@
+第一天复习
+复习内容： 多线程的实现方式、synchronized 关键字、Lock、ReadWriteLock
+
+1. 多线程常见的两种实现方式
+	1.1	继承Thread类
+	1.2	实现Runnable接口
+
+2. synchronized 关键字
+	2.1 说明
+		synchronized是java中的一个关键字，也就是说是Java语言内置的特性。
+		如果一个代码块被synchronized修饰了，当一个线程获取了对应的锁，并执行该代码块时，其他
+	线程便只能一直等待，等待获取锁的线程释放锁，而这里获取锁的线程释放锁只会有两种情况：
+		1）获取锁的线程执行完了该代码块，然后线程释放对锁的占有；
+		2）线程执行发生异常，此时JVM会让线程自动释放锁。
+	
+	2.2 基本格式
+		加同步格式：
+		synchronized( 需要一个任意的对象（锁） ){
+			代码块中放操作共享数据的代码。
+		}
+
+	2.3 优缺点
+
+		优点：
+		缺点：不会主动释放锁，一个线程阻塞时，其他线程会发生阻塞。
+
+
+3. Lock
+
+	3.1 简介
+		Lock 是 Java 的一个同步锁接口，lock 位于包 java.util.concurrent.locks 下。
+	3.2 API
+		public interface Lock {
+		    void lock();
+		    void lockInterruptibly() throws InterruptedException;
+		    boolean tryLock();
+		    boolean tryLock(long time, TimeUnit unit) throws InterruptedException;
+		    void unlock();
+	    }
+	    上边的方法可以分为两类，分别为：
+	    1) 获取锁方法：
+		    lock()、tryLock()、tryLock(long time, TimeUnit unit)、lockInterruptibly()
+		    说明：
+		    	lock()方法是平常使用得最多的一个方法，就是用来获取锁。如果锁已被其他线程获取，
+		    则进行等待。
+				由于在前面讲到如果采用Lock，必须主动去释放锁，并且在发生异常时，不会自动释放锁。
+			因此一般来说，使用Lock必须在try{}catch{}块中进行，并且将释放锁的操作放在finally块中
+			进行，以保证锁一定被被释放，防止死锁的发生。
+
+				tryLock()方法是有返回值的，它表示用来尝试获取锁，如果获取成功，则返回true，
+			如果获取失败（即锁已被其他线程获取），则返回false，也就说这个方法无论如何都会立即返
+			回。在拿不到锁时不会一直在那等待。
+
+				tryLock(long time, TimeUnit unit)方法和tryLock()方法是类似的，只不过区别在于这
+			个方法在拿不到锁时会等待一定的时间，在时间期限之内如果还拿不到锁，就返回false。如果
+			如果一开始拿到锁或者在等待期间内拿到了锁，则返回true。
+
+				lockInterruptibly()方法比较特殊，当通过这个方法去获取锁时，如果线程正在等待获取锁，
+			则这个线程能够响应中断，即中断线程的等待状态。也就使说，当两个线程同时通过
+			lock.lockInterruptibly()想获取某个锁时，假若此时线程A获取到了锁，而线程B只有等待，
+			那么对线程B调用threadB.interrupt()方法能够中断线程B的等待过程。
+				注意，当一个线程获取了锁之后，是不会被interrupt()方法中断的。
+　　			因此当通过lockInterruptibly() 方法获取某个锁时，如果不能获取到，只有进行等待的情况
+			下，是可以响应中断的。
+
+		2) 释放锁方法：
+			unLock()
+	3.3 一个简单的例子
+		public class LockDemo {
+			private static int count ; // 代表一个共享资源
+			// ReentrantLock 是Lock的一个非常常用的实现
+			static Lock lock = new ReentrantLock();  
+			public static <E> void main(String[] args) {
+				new Thread() {
+					public void run() {
+						Thread thread = Thread.currentThread();
+						lock.lock();
+						try {
+							System.out.println(thread.getName() + "得到了锁");
+							for (int i = 0; i < 5; i++) 
+								count ++;
+						} catch (Exception e) {
+						} finally {
+							System.out.println(thread.getName() + "释放了锁");
+							lock.unlock(); // 一定要在finally中把锁给释放掉
+						}
+
+					};
+				}.start();
+				
+				new Thread() {
+					public void run() {
+						Thread thread = Thread.currentThread();
+						lock.lock();
+						try {
+							System.out.println(thread.getName() + "得到了锁");
+							for (int i = 0; i < 5; i++) 
+								count ++ ;
+						} catch (Exception e) {
+						} finally {
+							System.out.println(thread.getName() + "释放了锁");
+							lock.unlock();
+						}
+					};
+				}.start();
+			}
+		}
+
+		// tryLock() 与lock用法差不多，不过tryLock能够返回一个boolean值，在做判断的时候可以
+		// 使用这个返回的布尔值做判断，判断是否继续下边的操作
+4. ReadWriteLock
+	
+	4.1 简介
+			ReadWriteLock 位于包 java.util.concurrent.locks 下，它提供一组锁管理，分别为读锁和
+		写锁. ReadWriteLock 是一个接口了。 
+			使用读写锁，可以实现读写分离锁定，读操作并发进行，写操作锁定单个线程。
+			如果有一个线程已经占用了读锁，则此时其他线程如果要申请写锁，则申请写锁的线程会一直
+		等待释放读锁。
+			如果有一个线程已经占用了写锁，则此时其他线程如果申请写锁或者读锁，则申请的线程会一
+		直等待释放写锁。
+			简而言之就是多个线程都是读操作时，操作可以并发的执行，而只要有写操作则就会发生阻塞
+	4.3 API
+		public interface ReadWriteLock {
+		    /**
+		     * Returns the lock used for reading.
+		     */
+		    Lock readLock();
+
+		    /**
+		     * Returns the lock used for writing.
+		     */
+		    Lock writeLock();
+		}
+	4.3 Demo
+		public class MyReentrantReadWriteLock {
+			//ReentrantReadWriteLock是ReadWriteLock接口的常用实现
+		 	private ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+		    public static void main(String[] args)  {
+		        final MyReentrantReadWriteLock test = new MyReentrantReadWriteLock();
+		        new Thread(){
+		            public void run() {
+		                test.get(Thread.currentThread());
+		                test.write(Thread.currentThread());
+		            };
+		        }.start();
+		        new Thread(){
+		            public void run() {
+		                test.get(Thread.currentThread());
+		                test.write(Thread.currentThread());
+		            };
+		        }.start();
+		         
+		    }  
+			    
+		    /**
+		     * 读操作,用读锁来锁定
+		     */
+		    public void get(Thread thread) {
+		        rwl.readLock().lock();
+		        try {
+		            long start = System.currentTimeMillis();
+		             
+		            while(System.currentTimeMillis() - start <= 1) {
+		                System.out.println(thread.getName()+"正在进行读操作");
+		            }
+		            System.out.println(thread.getName()+"读操作完毕");
+		        } finally {
+		            rwl.readLock().unlock();
+		        }
+		    }
+
+		    /**
+		     * 写操作，用写锁来锁定
+		     * @param thread
+		     */
+		    public void write(Thread thread) {
+		        rwl.writeLock().lock();;
+		        try {
+		            long start = System.currentTimeMillis();
+		             
+		            while(System.currentTimeMillis() - start <= 1) {
+		                System.out.println(thread.getName()+"正在进行写操作");
+		            }
+		            System.out.println(thread.getName()+"写操作完毕");
+		        } finally {
+		            rwl.writeLock().unlock();
+		        }
+		    }
+		}
+		// 输出内容中，刚开始的读操作有可能是交错执行的，但是写操作是不可能交错的。
+
+5. Lock 和 synchronized 的选择
+	1）Lock是一个接口，而synchronized是Java中的关键字，synchronized是内置的语言实现；
+　　2）synchronized在发生异常时，会自动释放线程占有的锁；而Lock在发生异常时，
+如果没有主动通过 unLock() 去释放锁，则很可能造成死锁现象，因此使用Lock时需要在finally块中释放锁；
+　　3）Lock可以让等待锁的线程响应中断，而synchronized却不行，使用synchronized时，等待的线程会一
+直等待下去，不能够响应中断；
+　　4）通过Lock可以知道有没有成功获取锁，而synchronized却无法办到。
+　　5）Lock可以提高多个线程进行读操作的效率。
+　　在性能上来说，如果竞争资源不激烈，两者的性能是差不多的，而当竞争资源非常激烈时（即有大量线
+程同时竞争），此时Lock的性能要远远优于synchronized。所以说，在具体使用时要根据适当情况选择。
